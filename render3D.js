@@ -1,3 +1,6 @@
+import * as THREE from 'three';
+
+console.log(THREE)
 
 // factory function: comment creer des objets sans faire des classes (avec une fonction génératrice)
 var createCharacter = function (name, lives, tex){
@@ -45,7 +48,7 @@ var createCharacter = function (name, lives, tex){
     return self
 }
 
-var createRenderEngine = function (canvasTarget) {
+var createRenderEngine3d = function (canvasTarget) {
     var self = {}
     var posInit = 50
     var posY = 200
@@ -57,16 +60,47 @@ var createRenderEngine = function (canvasTarget) {
     var img = new Image() // fonction qui fabrique une image
     img.src = "./img/terre.png"
 
+    //valiables globales threejs
+    var scene = undefined
+    var camera = undefined
+    var lamp = undefined
+    var mesh = undefined // une boite dans laquelle tu les geometries et le materiel (et textures)
+    var renderer = undefined
+    var cube = undefined
+
+    var createEnv = function() {
+        //creer une scene THREE JS
+        scene = new THREE.Scene()// instentier un element sur base d'une fonction, mettre une majuscule car c'est une class
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth, window.innerHeight, 0.1, 1000) // ratio entre la largeur et hauteur de ma vue
+        renderer = new THREE.WebGLRenderer()
+        renderer.setSize(window.innerWidth,window.innerHeight) // le nombre de pixels de notre renderer
+        document.body.appendChild(renderer.domElement) // pour ajouter un element HTML, notre renderer
+        
+        
+        //create the cube
+        var geometry = new THREE.BoxGeometry(1,1,1) //on fait une boite
+        var material = new THREE.MeshBasicMaterial({color: 0x00ff00}) //argument est sous forme d'objet
+        cube = new THREE.Mesh(geometry,material)
+        scene.add(cube)
+        
+        //position de la camera
+        camera.position.z = 5
+        //renderer.render(scene, camera) //on le met dans la fonction render pour qu'il s'update a chaque frame
+    }
+
     // recupere l'element html (class du canva: "render2d")
     var init = function () {
         var canvas = document.querySelector(canvasTarget)
-        var ctx = canvas.getContext('2d') //context c'est pour dessiner dans un canvas, on peut dessiner en 2d et 3d
+        var ctx = canvas.getContext('2d') 
+        
+        createEnv()
         
 
         var onKeyDown = function(event){
             console.log(event)
             if (event.key == "d") {
                 state = "right"
+                cube.rotation.x += 0.1
             }
             
             if (event.key == "q") {
@@ -88,6 +122,8 @@ var createRenderEngine = function (canvasTarget) {
             ctx.drawImage(img,posInit,posY) 
             //rectangle: fillRect(x,y,width,height) 
             //ctx.fillStyle = "blue" //a partir de mtn, remplit de cette couleur
+
+            renderer.render(scene, camera)
         }
 
         var process = function() {
@@ -136,4 +172,4 @@ var createRenderEngine = function (canvasTarget) {
     return self
 }
 
-export {createCharacter, createRenderEngine}
+export {createRenderEngine3d}

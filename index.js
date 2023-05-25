@@ -1,6 +1,7 @@
 import {startDialogue} from "./exercice.js"
 import {sayHi} from "./exo2.js"
 import {createCharacter, createRenderEngine} from "./render2D.js"
+import { createRenderEngine3d } from "./render3D.js"
 
 startDialogue()
 sayHi()
@@ -16,4 +17,4 @@ console.log(lechiendemartine.name)
 console.log(lechiendemartine.lives)
 
 // moteur de rendu en 2D qu'on était en train de creer (parametre)
-createRenderEngine(".render2d")
+createRenderEngine3d(".render2d")
