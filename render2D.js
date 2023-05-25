@@ -48,48 +48,35 @@ var createRenderEngine = function (canvasTarget) {
     var self = {}
     var posInit = 50
     var state = undefined
+    var is_jumping = false
+    var jumping_velocity = 0
+    var accelertation = 0.1
+    var jumping_height = 100
 
     // recupere l'element html (class du canva: "render2d")
     var init = function () {
         var canvas = document.querySelector(canvasTarget)
         var ctx = canvas.getContext('2d') //context c'est pour dessiner dans un canvas, on peut dessiner en 2d et 3d
         
-        // ca c'est un rectangle de (25,25) et (100,100) fillRect(x,y,width,height) 
-        // ctx.fillStyle = "blue"
-        // ctx.fillRect(100,100,100,100) 
-
-        // ctx.fillStyle = "red"
-        // ctx.fillRect(200,100,100,100)
 
         var onKeyDown = function(event){
             console.log(event)
-            if (event.key == "d"){
+            if (event.key == "d") {
                 self.state = "right"
             }
             
             if (event.key == "q") {
                 self.state = "left"
             }
-
-            if (event.key == "s") {
-                ctx.clearRect(0,0,canvas.width, canvas.height)
-                posInit += 1
-                ctx.fillStyle = "green" //a partir de mtn, remplit de cette couleur
-                ctx.fillRect(100,posInit,100,100) // position (1,50) à la position (5,50)
-            }
-            
             if (event.key == "z") {
-                ctx.clearRect(0,0,canvas.width, canvas.height)
-                posInit -= 1
-                ctx.fillStyle = "pink"
-                ctx.fillRect(100,posInit,100,100)
+                self.is_jumping = true
             }
         }
 
         var render = function() {
             ctx.clearRect(0,0,canvas.width, canvas.height)
             ctx.fillStyle = "blue" //a partir de mtn, remplit de cette couleur
-            ctx.fillRect(posInit,100,100,100) // position (1,50) à la position (5,50)
+            ctx.fillRect(posInit,100,100,100) //fillRect(x,y,width,height) 
         }
 
         var process = function() {
