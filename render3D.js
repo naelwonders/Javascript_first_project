@@ -39,6 +39,14 @@ var createRenderEngine3d = function (canvasTarget) {
         var geometry = new THREE.BoxGeometry(1,1,1) //on fait une boite
         var material = new THREE.MeshBasicMaterial({color: 0x00ff00}) //argument est sous forme d'objet
         cube = new THREE.Mesh(geometry,material)
+        
+        
+        const map = new THREE.TextureLoader().load('./img/terre.png')
+        //const map = new THREE.TextureLoader().load('./img/terre.png') pour faire un autre coté
+        const materialSprite = new THREE.SpriteMaterial({map:map})
+
+        cube = new THREE.Sprite(materialSprite)
+        
         scene.add(cube)
 
         //  ajouter une lumiere (il import pas la lumiere de blender)
@@ -60,8 +68,9 @@ var createRenderEngine3d = function (canvasTarget) {
         
         //focntion qui fait une action: ajouter a notre scene
         var onImport = function (gltf) {
-            gltf.scene.position.y = -3 // on peut utiliser les propriété de la scene car on a mis de gltf dessus
-            gltf.scene.position.z = -5
+            gltf.scene.position.y = -0.5 // on peut utiliser les propriété de la scene car on a mis de gltf dessus
+            gltf.scene.rotation.y = (3.1416/2)
+            gltf.scene.scale.set(0.5,0.5,0.5) //2x plus petit
             console.log(gltf)
             scene.add(gltf.scene) // la scene existe dans la propriété de gltf mais on l'a pas invoqué (donc ca fait encore rien)
         }
@@ -114,10 +123,12 @@ var createRenderEngine3d = function (canvasTarget) {
             // il faut clear avant le dessin, sinon tu effaces ce que tu dessines
             if (state == "right") {
                 cube.position.x += speed_3D
-                
+                //la camera suit l'objet
+                camera.position.x = cube.position.x
             }
             if (state == "left") {
                 cube.position.x -= speed_3D
+                camera.position.x = cube.position.x
             }
             if (is_jumping) {
                 cube.position.y += jumping_speed_3D
