@@ -38,7 +38,7 @@ var createCharacter = function (name, lives, tex){
 
     self.getDamage = getDamage;
     self.getLives = getLives;
-    self.getPosition = setPosition
+    self.getPosition = getPosition
     self.translate = translate;
     self.setPosition = setPosition;
     self.getTexture = getTexture; 

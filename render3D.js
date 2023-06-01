@@ -2,52 +2,6 @@ import * as THREE from 'three';
 
 console.log(THREE)
 
-// factory function: comment creer des objets sans faire des classes (avec une fonction génératrice)
-var createCharacter = function (name, lives, tex){
-    var self = {}
-    self.name = name
-    self.lives = lives
-    var texture = tex
-    var pos = {x:0,y:0}
-
-    var getDamage = function (howMany) {
-        self.lives = self.lives - howMany
-        if (lives<=0) {
-            alert("Aaaargh")
-        }
-        return lives
-    }
-
-    var getLives = function () {
-        return lives
-    }
-
-    var setPosition = function (x, y){
-        pos.x  = x
-        pos.y = y
-    }
-
-    var translate = function (x) {
-        pos.x += x
-    }
-
-    var getPosition = function () {
-        return pos
-    }
-
-    var getTexture = function () {
-        return texture
-    }
-
-    self.getDamage = getDamage;
-    self.getLives = getLives;
-    self.getPosition = setPosition
-    self.translate = translate;
-    self.setPosition = setPosition;
-    self.getTexture = getTexture; 
-    return self
-}
-
 var createRenderEngine3d = function (canvasTarget) {
     var self = {}
     var posInit = 50
@@ -55,8 +9,10 @@ var createRenderEngine3d = function (canvasTarget) {
     var state = undefined
     var is_jumping = false
     var is_falling = false
-    var speed = 1
+    var speed = 1 // unité en pixel
+    var speed_3D = 0.1 //unité en fonction de la taille du cube !!! donc c'est plus vite (three js)
     var jumping_speed = 5
+    var jumping_speed_3D = 0.3
     var img = new Image() // fonction qui fabrique une image
     img.src = "./img/terre.png"
 
@@ -71,7 +27,7 @@ var createRenderEngine3d = function (canvasTarget) {
     var createEnv = function() {
         //creer une scene THREE JS
         scene = new THREE.Scene()// instentier un element sur base d'une fonction, mettre une majuscule car c'est une class
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth, window.innerHeight, 0.1, 1000) // ratio entre la largeur et hauteur de ma vue
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth/ window.innerHeight, 0.1, 1000) // ratio entre la largeur et hauteur de ma vue
         renderer = new THREE.WebGLRenderer()
         renderer.setSize(window.innerWidth,window.innerHeight) // le nombre de pixels de notre renderer
         document.body.appendChild(renderer.domElement) // pour ajouter un element HTML, notre renderer
@@ -100,7 +56,6 @@ var createRenderEngine3d = function (canvasTarget) {
             console.log(event)
             if (event.key == "d") {
                 state = "right"
-                cube.rotation.x += 0.1
             }
             
             if (event.key == "q") {
@@ -108,6 +63,9 @@ var createRenderEngine3d = function (canvasTarget) {
             }
             if (event.key == "z" && !is_jumping && !is_falling) {
                 is_jumping = true
+            }
+            if (event.key == "r") {
+                cube.rotation.x += 0.1
             }
         }
 
@@ -131,22 +89,24 @@ var createRenderEngine3d = function (canvasTarget) {
             //quand state = left, notre pos init est changé pour que ca se déplace a gauche, same pour right
             // il faut clear avant le dessin, sinon tu effaces ce que tu dessines
             if (state == "right") {
-                posInit += 5
+                cube.position.x += speed_3D
+                
             }
             if (state == "left") {
-                posInit -= 5
+                cube.position.x -= speed_3D
             }
             if (is_jumping) {
-                posY -= jumping_speed
+                cube.position.y += jumping_speed_3D
                 // pour qu'il arrete de sauter a 50 pixels
-                if (posY < 50) {
+                if (cube.position.y > 2) {
                     is_jumping = false
                     is_falling = true
                 }
             }
             if (is_falling) {
-                posY = posY + jumping_speed
-                if (posY > 200) {
+                cube.position.y = cube.position.y - jumping_speed_3D
+                // la position zero est calibrée en fonction de comment les element sont placés initialement
+                if (cube.position.y < 0) {
                     is_falling = false
                 }
             }
