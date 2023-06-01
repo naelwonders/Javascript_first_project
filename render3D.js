@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js" // pour blender
+// attention, sur blender, il faut ajouter un materiel sinon rien ne se voit :)
 
 console.log(THREE)
 
@@ -15,7 +17,7 @@ var createRenderEngine3d = function (canvasTarget) {
     var jumping_speed_3D = 0.3
     var img = new Image() // fonction qui fabrique une image
     img.src = "./img/terre.png"
-
+    
     //valiables globales threejs
     var scene = undefined
     var camera = undefined
@@ -23,12 +25,12 @@ var createRenderEngine3d = function (canvasTarget) {
     var mesh = undefined // une boite dans laquelle tu les geometries et le materiel (et textures)
     var renderer = undefined
     var cube = undefined
-
+    
     var createEnv = function() {
         //creer une scene THREE JS
         scene = new THREE.Scene()// instentier un element sur base d'une fonction, mettre une majuscule car c'est une class
         camera = new THREE.PerspectiveCamera(75, window.innerWidth/ window.innerHeight, 0.1, 1000) // ratio entre la largeur et hauteur de ma vue
-        renderer = new THREE.WebGLRenderer()
+        renderer = new THREE.WebGLRenderer({alpha:true}) //alpha : afficher l'arrèire plan, plutot que du noir
         renderer.setSize(window.innerWidth,window.innerHeight) // le nombre de pixels de notre renderer
         document.body.appendChild(renderer.domElement) // pour ajouter un element HTML, notre renderer
         
@@ -38,10 +40,32 @@ var createRenderEngine3d = function (canvasTarget) {
         var material = new THREE.MeshBasicMaterial({color: 0x00ff00}) //argument est sous forme d'objet
         cube = new THREE.Mesh(geometry,material)
         scene.add(cube)
+
+        //  ajouter une lumiere (il import pas la lumiere de blender)
+        var light = new THREE.AmbientLight(0x404040)
+        scene.add(light)
         
         //position de la camera
         camera.position.z = 5
         //renderer.render(scene, camera) //on le met dans la fonction render pour qu'il s'update a chaque frame
+
+        importScene() // bien mettre après car on doit recevoir scene avant
+    }
+    
+    //on a importer fichier blender en format gltf (extended) dans notre fichier img
+    // on va importer notre scene blender
+    // callback: on attend que quelque chose soit terminé pour faire les prochaines étapes
+    var importScene = function () {
+        var loader = new GLTFLoader() // importer la scene
+        
+        //focntion qui fait une action: ajouter a notre scene
+        var onImport = function (gltf) {
+            gltf.scene.position.y = -3 // on peut utiliser les propriété de la scene car on a mis de gltf dessus
+            gltf.scene.position.z = -5
+            console.log(gltf)
+            scene.add(gltf.scene) // la scene existe dans la propriété de gltf mais on l'a pas invoqué (donc ca fait encore rien)
+        }
+        loader.load("./img/tjs.gltf", onImport)
     }
 
     // recupere l'element html (class du canva: "render2d")
@@ -51,7 +75,7 @@ var createRenderEngine3d = function (canvasTarget) {
         
         createEnv()
         
-
+        
         var onKeyDown = function(event){
             console.log(event)
             if (event.key == "d") {
